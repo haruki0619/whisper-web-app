@@ -38,8 +38,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework", #API開発用パッケージ 
-    "channels", #Websocket用パッケージ
-    "transcription" #文字起こしアプリ
+    "channels", #Websocket用パッケaージ
+    "transcription" ,#文字起こしアプリ
+    "whisper_app" #Webページ用アプリ
 ]
 
 # WebSocket（非同期通信）を動かすための設定

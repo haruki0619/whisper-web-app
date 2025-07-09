@@ -1,0 +1,21 @@
+<form id="upload-form">
+  {% csrf_token %}
+  <input type="file" name="audio_file" accept="audio/*" required>
+  <button type="submit">文字起こし</button>
+</form>
+<pre id="result"></pre>
+
+<script>
+  document.getElementById('upload-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const res = await fetch('/api/transcribe/', {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    });
+    const json = await res.json();
+    document.getElementById('result').innerText = json.text || 'エラー';
+  });
+  // getCookie 関数は Django の docs を参照
+</script>

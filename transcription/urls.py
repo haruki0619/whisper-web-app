@@ -5,5 +5,5 @@ from .views import TranscribeView
 app_name = "transcription"
 
 urlpatterns = [
-    path("transcribe/" , TranscribeView.as_view(),name = "api-transcription")
+    path("transcribe/" , TranscribeView.as_view(),name = "transcribe")
     ]
