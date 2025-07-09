@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-jm2#*gcumuk(%v7ox)^f4@j^mr%@*j2=+qdk2zb-wz32^hi%qg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework", #API開発用パッケージ 
-    "channels", #Websocket用パッケaージ
+    "rest_framework",  # API開発用パッケージ
+    "channels",  # Websocket用パッケージ
     "transcription" ,#文字起こしアプリ
     "whisper_app" #Webページ用アプリ
 ]
@@ -110,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ja"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -129,6 +129,5 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-import os
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, ("media"))
+MEDIA_ROOT = BASE_DIR / "media"
