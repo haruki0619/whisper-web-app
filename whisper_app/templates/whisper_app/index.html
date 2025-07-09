@@ -1,21 +1,141 @@
-<form id="upload-form">
-  {% csrf_token %}
-  <input type="file" name="audio_file" accept="audio/*" required>
-  <button type="submit">文字起こし</button>
-</form>
-<pre id="result"></pre>
-
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音声ファイル文字起こし</title>
+  <style>
+body {
+  font-family: 'Segoe UI', 'Meiryo', sans-serif;
+  background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 32px 24px 40px 24px;
+}
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 32px;
+}
+#upload-form {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+#result-area {
+  background: #f4f4f4;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 80px;
+  font-size: 1.2em;
+  color: #222;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 16px;
+  outline: none;
+}
+.button-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+button:hover {
+  background: #1256a3;
+  transform: scale(1.04);
+}
+input[type="file"] {
+  font-size: 1em;
+}
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  #upload-form { flex-direction: column; gap: 8px; }
+  .button-row { flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>音声ファイル文字起こし</h1>
+  <form id="upload-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="audio_file" accept="audio/*,video/*" required>
+    <button type="submit">文字起こし</button>
+  </form>
+  <div id="result-area" contenteditable="true" spellcheck="false" tabindex="0"></div>
+  <div class="button-row">
+    <button id="copy-btn" type="button">テキストをコピー</button>
+    <button id="download-btn" type="button">テキストファイルで保存</button>
+  </div>
+</div>
 <script>
-  document.getElementById('upload-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const res = await fetch('/api/transcribe/', {
-      method: 'POST',
-      body: formData,
-      headers: { 'X-CSRFToken': getCookie('csrftoken') }
-    });
-    const json = await res.json();
-    document.getElementById('result').innerText = json.text || 'エラー';
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const resultArea = document.getElementById('result-area');
+document.getElementById('upload-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  resultArea.textContent = '文字起こし中...';
+  const formData = new FormData(e.target);
+  const res = await fetch('/api/transcribe/', {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-CSRFToken': getCookie('csrftoken') }
   });
-  // getCookie 関数は Django の docs を参照
+  const json = await res.json();
+  resultArea.textContent = json.text || 'エラー';
+});
+document.getElementById('copy-btn').onclick = () => {
+  const text = resultArea.textContent;
+  if (text) {
+    navigator.clipboard.writeText(text);
+    alert('テキストをコピーしました');
+  }
+};
+document.getElementById('download-btn').onclick = () => {
+  const text = resultArea.textContent;
+  if (text) {
+    const blob = new Blob([text], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transcription.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+};
 </script>
+</body>
+</html>

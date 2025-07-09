@@ -206,3 +206,15 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 ffmpeg-7.1.1-essentials_build/bin/ffmpeg.exe
+
+# 追加分
+media/
+venv/
+ffmpeg/
+ffmpeg-7.1.1-essentials_build/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.DS_Store

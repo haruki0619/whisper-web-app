@@ -6,6 +6,11 @@ from django.conf import settings
 import whisper
 import os
 
+# ffmpegのパスを明示的に追加
+os.environ["PATH"] += os.pathsep + os.path.join(str(settings.BASE_DIR), "ffmpeg", "ffmpeg-7.1.1-essentials_build", "bin")
+
+# サーバ起動時に一度だけWhisperモデルをロード
+WHISPER_MODEL = whisper.load_model("base")
 
 class TranscribeView(APIView):
     """
@@ -36,10 +41,8 @@ class TranscribeView(APIView):
 
         # ここまでで、サーバー内の media/uploads/ にファイルが置かれる
 
-        # Whisper モデルをロードする
-        # "base" モデルは軽量で動作も比較的速いが、
-        # small/medium/large などに変えることも可能
-        model = whisper.load_model("base")
+        # Whisper モデルをロードする（毎回ではなくグローバル変数を使う）
+        model = WHISPER_MODEL
         filename = serializer.validated_data["audio_file"].name
         # 文字起こしを実行
         result = model.transcribe(file_path)
@@ -49,4 +52,3 @@ class TranscribeView(APIView):
         text = result.get('text', '').strip()
         return Response({'text': text}, status=status.HTTP_200_OK)
 
-            
