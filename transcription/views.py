@@ -7,7 +7,7 @@ import whisper
 import os
 
 # ffmpegのパスを明示的に追加
-os.environ["PATH"] += os.pathsep + os.path.join(str(settings.BASE_DIR), "ffmpeg", "ffmpeg-7.1.1-essentials_build", "bin")
+# os.environ["PATH"] += os.pathsep + os.path.join(str(settings.BASE_DIR), "ffmpeg", "ffmpeg-7.1.1-essentials_build", "bin")
 
 # サーバ起動時に一度だけWhisperモデルをロード
 WHISPER_MODEL = whisper.load_model("base")
@@ -51,4 +51,3 @@ class TranscribeView(APIView):
         #テキスト結果だけを取り出してクライアントに返す
         text = result.get('text', '').strip()
         return Response({'text': text}, status=status.HTTP_200_OK)
-
